@@ -1,0 +1,14 @@
+%import .assign (assign_stmt)
+%import common.CNAME   -> NAME
+%import common.INT
+%import common.ESCAPED_STRING
+
+when_stmt: "when" comparison block ["otherwise" block]
+
+comparison: comparable_elements "equals" comparable_elements
+
+comparable_elements : NAME
+                   | INT
+                   | ESCAPED_STRING
+
+block: "{" (assign_stmt | when_stmt)* "}"

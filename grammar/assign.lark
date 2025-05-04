@@ -1,0 +1,8 @@
+%import common.CNAME   -> NAME
+%import common.INT
+%import common.ESCAPED_STRING
+
+assign_stmt: "set" NAME "to" value
+
+?value: INT           -> int
+      | ESCAPED_STRING -> string

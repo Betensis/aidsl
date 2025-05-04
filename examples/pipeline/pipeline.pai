@@ -1,0 +1,14 @@
+set count to 0
+
+repeat while count < 3 {
+    when count equals 1 {
+        log "Count is one!"
+    } otherwise {
+        log "Current count: ${count}"
+    }
+
+    increase count by 1
+    wait for 1 second
+}
+
+log "Pipeline completed!"
