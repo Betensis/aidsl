@@ -1,0 +1,27 @@
+%import common.WS
+%import common.NEWLINE
+%import common.CNAME   -> NAME
+%import common.INT
+%import common.ESCAPED_STRING
+%ignore WS
+%ignore NEWLINE
+
+assign_stmt: "set" NAME "to" value
+?value: INT            -> int
+      | ESCAPED_STRING -> string
+
+when_stmt: "when" comparison block ["otherwise" block]
+comparison: comparable_elements "equals" comparable_elements
+?comparable_elements: NAME
+                    | INT
+                    | ESCAPED_STRING
+
+block: "{" stmt* "}"
+
+?stmt_with_block: stmt
+                | block
+
+?stmt: assign_stmt
+     | when_stmt
+
+start: stmt*
