@@ -1,10 +1,8 @@
 %import common.WS
-%import common.NEWLINE
 %import common.CNAME   -> NAME
 %import common.INT
 %import common.ESCAPED_STRING
 %ignore WS
-%ignore NEWLINE
 
 assign_stmt: "set" NAME "to" value
 ?value: INT            -> int

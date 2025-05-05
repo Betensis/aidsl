@@ -10,6 +10,7 @@ def get_parser() -> lark.Lark:
         "grammar/main.lark",
         parser="lalr",
         start="start",
+        strict=True,
         rel_to= str(Path("./grammar").absolute()),
         debug=True,
     )
