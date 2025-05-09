@@ -17,6 +17,8 @@ print_stmt: "print" expression
 ?expression: NAME      -> name
            | INT       -> int
            | ESCAPED_STRING -> string
+           | "true"    -> true
+           | "false"   -> false
 
 block: "{" stmt* "}"
 

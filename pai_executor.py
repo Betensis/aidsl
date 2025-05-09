@@ -24,7 +24,6 @@ class DoNothingPrintStrategy(PrintStrategy):
 
 
 class PaiExecutor(Interpreter):
-
     def __init__(self, print_strategy: PrintStrategy = ConsolePrintStrategy()):
         self.__vars = {}
         self.__print_strategy = print_strategy

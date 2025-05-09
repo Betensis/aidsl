@@ -18,3 +18,11 @@ class ExpressionEvaluator(Interpreter):
     def name(self, tree: Tree):
         varname = str(tree.children[0])
         return self.__vars.get(varname)
+
+    @staticmethod
+    def true(_):
+        return True
+
+    @staticmethod
+    def false(_):
+        return False

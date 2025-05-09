@@ -1,4 +1,8 @@
 set count to 0
 set count13 to "Test"
+
 set alert to "asd"
 set alert to 123
+
+set boolean to true
+set boolean to false
