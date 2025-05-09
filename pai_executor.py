@@ -1,12 +1,33 @@
+from abc import ABC, abstractmethod
+
 from lark import Tree
 from lark.visitors import Interpreter
 
 from expression.evaluator import ExpressionEvaluator
+from procols import Printable
+
+
+class PrintStrategy(ABC):
+    @abstractmethod
+    def print(self, value: Printable):
+        pass
+
+
+class ConsolePrintStrategy(PrintStrategy):
+    def print(self, value: Printable):
+        print(value)
+
+
+class DoNothingPrintStrategy(PrintStrategy):
+    def print(self, value: Printable):
+        pass
 
 
 class PaiExecutor(Interpreter):
-    def __init__(self):
+
+    def __init__(self, print_strategy: PrintStrategy = ConsolePrintStrategy()):
         self.__vars = {}
+        self.__print_strategy = print_strategy
 
     def assign_stmt(self, tree: Tree):
         name, expr = tree.children
@@ -26,7 +47,7 @@ class PaiExecutor(Interpreter):
     def print_stmt(self, tree: Tree):
         expr = tree.children[0]
         value = ExpressionEvaluator(self.__vars).visit(expr)
-        print(value)
+        self.__print_strategy.print(value)
 
     def comparison(self, tree: Tree):
         left_expr, right_expr = tree.children

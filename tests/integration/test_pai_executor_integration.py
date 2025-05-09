@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from main import get_parser
-from pai_executor import PaiExecutor
+from pai_executor import PaiExecutor, DoNothingPrintStrategy
 
 parser = get_parser()
 
@@ -14,6 +14,6 @@ def test_pai_executor_can_parse_correct_code():
             with open(pai_file, "r") as f:
                 code = f.read()
             tree = parser.parse(code)
-            executor = PaiExecutor()
+            executor = PaiExecutor(DoNothingPrintStrategy())
             executor.visit(tree)
             assert True

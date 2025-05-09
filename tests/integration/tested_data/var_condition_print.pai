@@ -1,0 +1,12 @@
+set count to 0
+when count equals 0
+{
+    print "count is zero"
+}
+otherwise
+{
+    set count to 1
+    print "count is one"
+}
+
+print count
