@@ -27,7 +27,7 @@ class PaiExecutor(Interpreter):
         elif false_blk:
             self.visit(false_blk)
 
-    def log_stmt(self, tree: Tree):
+    def print_stmt(self, tree: Tree):
         tree = ToPythonTypes().transform(tree)
         value = tree.children[0]
         if isinstance(value, (int, str)):
@@ -89,3 +89,4 @@ if __name__ == "__main__":
         code = f.read()
     tree = parser.parse(code)
     PaiExecutor().visit(tree)
+

@@ -17,9 +17,9 @@ comparison: comparable_elements "equals" comparable_elements
                     | INT
                     | ESCAPED_STRING -> string
 
-log_stmt: "log" loggable_elements
+print_stmt: "print" printable_elements
 
-?loggable_elements: NAME -> name
+?printable_elements: NAME -> name
                         | INT -> int
                         | ESCAPED_STRING -> string
 
@@ -27,6 +27,7 @@ block: "{" stmt* "}"
 
 ?stmt: assign_stmt
      | when_stmt
-     | log_stmt
+     | print_stmt
 
 start: stmt*
+

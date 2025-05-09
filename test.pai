@@ -1,9 +1,9 @@
 set count to "this is count"
-log "asd"
-log 1
-log 1
-log 1123123
-log count
+print "asd"
+print 1
+print 1
+print 1123123
+print count
 
 when count equals "this is count"
 {
@@ -14,5 +14,5 @@ otherwise
     set count to 921312
 }
 
-log count
+print count
 
