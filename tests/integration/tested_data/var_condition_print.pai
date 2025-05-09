@@ -1,5 +1,5 @@
 set count to 0
-when count equals 0
+when count = 0
 {
     print "count is zero"
 }

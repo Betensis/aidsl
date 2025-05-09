@@ -5,7 +5,7 @@ print 1
 print 1123123
 print count
 
-when count equals "this is count"
+when count = "this is count"
 {
     set count to "ыфвфыв"
 }
