@@ -7,21 +7,17 @@
 COMMENT: "#" /[^\n]/*
 %ignore COMMENT
 
-assign_stmt: "set" NAME "to" value
-?value: INT            -> int
-      | ESCAPED_STRING -> string
+assign_stmt: "set" NAME "to" expression
 
 when_stmt: "when" comparison block ["otherwise" block]
-comparison: comparable_elements "equals" comparable_elements
-?comparable_elements: NAME -> name
-                    | INT
-                    | ESCAPED_STRING -> string
+comparison: expression "equals" expression
 
-print_stmt: "print" printable_elements
+print_stmt: "print" expression
 
-?printable_elements: NAME -> name
-                        | INT -> int
-                        | ESCAPED_STRING -> string
+?expression: NAME      -> name
+           | INT       -> int
+           | ESCAPED_STRING -> string
+           // здесь в будущем можно добавить вызовы функций и другие выражения
 
 block: "{" stmt* "}"
 
@@ -30,4 +26,3 @@ block: "{" stmt* "}"
      | print_stmt
 
 start: stmt*
-
