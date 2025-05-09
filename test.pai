@@ -1,0 +1,18 @@
+set count to "this is count"
+log "asd"
+log 1
+log 1
+log 1123123
+log count
+
+when count equals "this is count"
+{
+    set count to "ыфвфыв"
+}
+otherwise
+{
+    set count to 921312
+}
+
+log count
+
