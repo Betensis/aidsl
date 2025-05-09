@@ -1,0 +1,4 @@
+set count to 0
+set count13 to "Test"
+set alert to "asd"
+set alert to 123

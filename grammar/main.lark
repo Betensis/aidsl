@@ -17,7 +17,6 @@ print_stmt: "print" expression
 ?expression: NAME      -> name
            | INT       -> int
            | ESCAPED_STRING -> string
-           // здесь в будущем можно добавить вызовы функций и другие выражения
 
 block: "{" stmt* "}"
 

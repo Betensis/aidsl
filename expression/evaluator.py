@@ -6,10 +6,12 @@ class ExpressionEvaluator(Interpreter):
     def __init__(self, variables: dict):
         self.__vars = variables
 
-    def int(self, tree: Tree):
+    @staticmethod
+    def int(tree: Tree):
         return int(tree.children[0])
 
-    def string(self, tree: Tree):
+    @staticmethod
+    def string(tree: Tree):
         token = tree.children[0]
         return token[1:-1]
 
