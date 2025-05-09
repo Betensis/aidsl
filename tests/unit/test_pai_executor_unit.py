@@ -15,5 +15,9 @@ def test_pai_executor_can_parse_correct_code():
                 code = f.read()
             tree = parser.parse(code)
             executor = PaiExecutor(DoNothingPrintStrategy())
-            executor.visit(tree)
+            try:
+                executor.visit(tree)
+            except Exception as e:
+                assert False, f"Error in file {pai_file}: {e}"
+
             assert True

@@ -10,7 +10,11 @@ COMMENT: "#" /[^\n]/*
 assign_stmt: "set" NAME "to" expression
 
 when_stmt: "when" comparison block ["otherwise" block]
-comparison: expression "=" expression
+
+comparison: expression op expression
+op: "=" -> equal
+    | ">" -> more
+    | "<" -> less
 
 print_stmt: "print" expression
 

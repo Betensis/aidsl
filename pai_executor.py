@@ -43,16 +43,26 @@ class PaiExecutor(Interpreter):
         elif false_blk:
             self.visit(false_blk)
 
+    def comparison(self, tree: Tree):
+        left_expr, op_node, right_expr = tree.children
+        left = ExpressionEvaluator(self.__vars).visit(left_expr)
+        right = ExpressionEvaluator(self.__vars).visit(right_expr)
+
+        operation = op_node.data
+
+        if operation == "equal":
+            return left == right
+        elif operation == "more":
+            return left > right
+        elif operation == "less":
+            return left < right
+        else:
+            raise ValueError(f"Unknown operation: {operation}")
+
     def print_stmt(self, tree: Tree):
         expr = tree.children[0]
         value = ExpressionEvaluator(self.__vars).visit(expr)
         self.__print_strategy.print(value)
-
-    def comparison(self, tree: Tree):
-        left_expr, right_expr = tree.children
-        left = ExpressionEvaluator(self.__vars).visit(left_expr)
-        right = ExpressionEvaluator(self.__vars).visit(right_expr)
-        return left == right
 
     def block(self, tree: Tree):
         for stmt in tree.children:
