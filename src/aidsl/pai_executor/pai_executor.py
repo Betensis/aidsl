@@ -16,7 +16,11 @@ class PaiExecutor(Interpreter):
 
     def assign_stmt(self, tree: Tree):
         name, expr = tree.children
-        value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+        # Evaluate the expression - handle function calls specially
+        if isinstance(expr, Tree) and expr.data == 'function_call_expr':
+            value = self.visit(expr)
+        else:
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
         self.__vars_storage.set_variable(str(name), value)
 
     def when_stmt(self, tree: Tree):
@@ -68,6 +72,7 @@ class PaiExecutor(Interpreter):
         args = []
         for arg in tree.children[1:]:
             if arg is not None:
+                # Evaluate each argument
                 args.append(ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(arg))
 
         # Execute the function and return its actual result value
@@ -75,7 +80,8 @@ class PaiExecutor(Interpreter):
 
     def function_call_expr(self, tree: Tree):
         # Evaluate the function call and return its actual result value
-        return self.function_call(tree.children[0])
+        result = self.function_call(tree.children[0])
+        return result
 
     def return_stmt(self, tree: Tree):
         expr = tree.children[0]
@@ -137,5 +143,6 @@ class PaiExecutor(Interpreter):
         self.__is_returning = old_is_returning
         self.__return_value = old_return_value
         
+        # Return the actual computed value, not the AST node
         return return_value
         
