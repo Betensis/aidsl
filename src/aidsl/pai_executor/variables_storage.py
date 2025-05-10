@@ -28,12 +28,8 @@ class VariablesStorage:
         return self.__current_scope_index
 
     def set_variable(self, name: str, value: Any) -> None:
-        if self.__is_in_function_scope() and self.__variable_exists_in_global_scope(
-            name
-        ):
-            self.__scopes[self.__global_scope_index][name] = value
-        else:
-            self.__scopes[self.__current_scope_index][name] = value
+        # Always set variable in current scope only
+        self.__scopes[self.__current_scope_index][name] = value
 
     def get_variable(self, name: str) -> Any:
         if name in self.__scopes[self.__current_scope_index]:

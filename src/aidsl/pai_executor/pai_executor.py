@@ -70,10 +70,12 @@ class PaiExecutor(Interpreter):
             if arg is not None:
                 args.append(ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(arg))
 
-        return self._execute_function(func_name, args)
+        result = self._execute_function(func_name, args)
+        return result
 
     def function_call_expr(self, tree: Tree):
-        return self.function_call(tree.children[0])
+        result = self.function_call(tree.children[0])
+        return result
 
     def return_stmt(self, tree: Tree):
         expr = tree.children[0]
@@ -125,13 +127,17 @@ class PaiExecutor(Interpreter):
 
         # Store return value in parent scope's "result" variable
         if return_value is not None:
-            # Temporarily switch to parent scope to set result
+            # Switch back to parent scope
+            self.__vars_storage.remove_scope()
             self.__vars_storage.switch_to_scope(current_scope)
+            # Set result in parent scope
             self.__vars_storage.set_variable("result", return_value)
+            return return_value
         
-        # Remove function scope and switch back to previous scope
-        self.__vars_storage.remove_scope()
-        self.__vars_storage.switch_to_scope(current_scope)
+        # If we haven't already removed the scope (in case of return)
+        if self.__vars_storage.get_current_scope() != current_scope:
+            self.__vars_storage.remove_scope()
+            self.__vars_storage.switch_to_scope(current_scope)
         
         # Restore previous return state
         self.__is_returning = old_is_returning
