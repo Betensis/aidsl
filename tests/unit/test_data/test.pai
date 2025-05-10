@@ -89,4 +89,32 @@ recursive_sum(5)
 print "Sum of numbers from 1 to 5: "
 print result
 
+# Testing variable scoping
+tool test_scoping() {
+    set local_var to "local variable"
+    set count to 100
+    
+    tool nested_function() {
+        set nested_var to "nested variable"
+        set local_var to "modified local"
+        return nested_var + " and " + local_var
+    }
+    
+    nested_function()
+    print "Result from nested function: "
+    print result
+    print "Local var in outer function: "
+    print local_var
+    print "Count in function (should be 100): "
+    print count
+    
+    return "Scoping test complete"
+}
+
+test_scoping()
+print "Result from scoping test: "
+print result
+print "Count in global scope (should still be 6): "
+print count
+
 print "Test finished"
