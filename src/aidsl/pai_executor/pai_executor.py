@@ -16,11 +16,24 @@ class PaiExecutor(Interpreter):
 
     def assign_stmt(self, tree: Tree):
         name, expr = tree.children
-        # Evaluate the expression - handle function calls specially
+        
+        # For function calls, we need to evaluate them directly
         if isinstance(expr, Tree) and expr.data == 'function_call_expr':
             value = self.visit(expr)
+        # For expressions containing function calls, we need special handling
+        elif isinstance(expr, Tree) and any(
+            isinstance(child, Tree) and child.data == 'function_call_expr' 
+            for child in expr.children if isinstance(child, Tree)
+        ):
+            # First evaluate any function calls in the expression
+            for i, child in enumerate(expr.children):
+                if isinstance(child, Tree) and child.data == 'function_call_expr':
+                    expr.children[i] = self.visit(child)
+            # Then evaluate the whole expression
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
         else:
             value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+            
         self.__vars_storage.set_variable(str(name), value)
 
     def when_stmt(self, tree: Tree):
@@ -80,12 +93,28 @@ class PaiExecutor(Interpreter):
 
     def function_call_expr(self, tree: Tree):
         # Evaluate the function call and return its actual result value
-        result = self.function_call(tree.children[0])
-        return result
+        return self.function_call(tree.children[0])
 
     def return_stmt(self, tree: Tree):
         expr = tree.children[0]
-        value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+        
+        # For function calls, we need to evaluate them directly
+        if isinstance(expr, Tree) and expr.data == 'function_call_expr':
+            value = self.visit(expr)
+        # For expressions containing function calls, we need special handling
+        elif isinstance(expr, Tree) and any(
+            isinstance(child, Tree) and child.data == 'function_call_expr' 
+            for child in expr.children if isinstance(child, Tree)
+        ):
+            # First evaluate any function calls in the expression
+            for i, child in enumerate(expr.children):
+                if isinstance(child, Tree) and child.data == 'function_call_expr':
+                    expr.children[i] = self.visit(child)
+            # Then evaluate the whole expression
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+        else:
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+            
         self.__return_value = value
         self.__is_returning = True
         return Discard
