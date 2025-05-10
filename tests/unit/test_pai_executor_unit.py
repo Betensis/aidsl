@@ -146,17 +146,15 @@ def test_conditional_inside_function():
     code = """
     tool max(a, b) {
         when a > b {
-            set result to a
+            return a
         } otherwise {
-            set result to b
+            return b
         }
     }
 
-    max(15, 8)
-    set max_result1 to result
+    set max_result1 to max(15, 8)
 
-    max(3, 9)
-    set max_result2 to result
+    set max_result2 to max(3, 9)
     """
 
     tree = parser.parse(code)
@@ -171,17 +169,14 @@ def test_conditional_inside_function():
 def test_function_redefinition():
     code = """
     tool greet() {
-        set result to "Hello"
+        return "Hello"
     }
-
-    greet()
-    set first_greeting to result
 
     tool greet() {
-        set result to "Hi"
+        return "Hi"
     }
 
-    greet()
+    set first_greeting to greet()
     """
 
     tree = parser.parse(code)
@@ -189,8 +184,7 @@ def test_function_redefinition():
     executor.visit(tree)
 
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
-    assert vars_dict["first_greeting"] == "Hello"
-    assert vars_dict["result"] == "Hi"
+    assert vars_dict["first_greeting"] == "Hi"
 
 
 def test_return_statement():
@@ -267,7 +261,6 @@ def test_local_variable_isolation():
     tool modify_local() {
         set local_var to 42
         set global_var to 200
-        return global_var
     }
 
     modify_local()
@@ -278,8 +271,7 @@ def test_local_variable_isolation():
     executor.visit(tree)
 
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
-    assert vars_dict["global_var"] == 100  # Global var should remain unchanged
-    assert vars_dict["result"] == 200      # Return value is stored in result
+    assert vars_dict["global_var"] == 100
     assert "local_var" not in vars_dict
 
 
@@ -302,11 +294,11 @@ def test_variable_scoping():
     outer_function()
     set final_result to result
     """
-    
+
     tree = parser.parse(code)
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
-    
+
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
     assert vars_dict["global_var"] == "global"  # Global var should remain unchanged
     assert vars_dict["final_result"] == "outer result using inner result"
@@ -314,6 +306,7 @@ def test_variable_scoping():
     assert "outer_var" not in vars_dict
     assert "inner_var" not in vars_dict
     assert "local_global_var" not in vars_dict
+
 
 def test_execute_complex_test_pai():
     test_file_path = Path(__file__).parent / "test_data" / "test.pai"

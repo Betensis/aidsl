@@ -16,24 +16,29 @@ class PaiExecutor(Interpreter):
 
     def assign_stmt(self, tree: Tree):
         name, expr = tree.children
-        
+
         # For function calls, we need to evaluate them directly
-        if isinstance(expr, Tree) and expr.data == 'function_call_expr':
+        if isinstance(expr, Tree) and expr.data == "function_call_expr":
             value = self.visit(expr)
         # For expressions containing function calls, we need special handling
         elif isinstance(expr, Tree) and any(
-            isinstance(child, Tree) and child.data == 'function_call_expr' 
-            for child in expr.children if isinstance(child, Tree)
+            isinstance(child, Tree) and child.data == "function_call_expr"
+            for child in expr.children
+            if isinstance(child, Tree)
         ):
             # First evaluate any function calls in the expression
             for i, child in enumerate(expr.children):
-                if isinstance(child, Tree) and child.data == 'function_call_expr':
+                if isinstance(child, Tree) and child.data == "function_call_expr":
                     expr.children[i] = self.visit(child)
             # Then evaluate the whole expression
-            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(
+                expr
+            )
         else:
-            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
-            
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(
+                expr
+            )
+
         self.__vars_storage.set_variable(str(name), value)
 
     def when_stmt(self, tree: Tree):
@@ -41,7 +46,9 @@ class PaiExecutor(Interpreter):
         true_blk = tree.children[1]
         false_blk = tree.children[2] if len(tree.children) == 3 else None
 
-        condition_result = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(cond_expr)
+        condition_result = ExpressionEvaluator(
+            self.__vars_storage.get_all_variables()
+        ).visit(cond_expr)
 
         if condition_result:
             self.visit(true_blk)
@@ -78,15 +85,17 @@ class PaiExecutor(Interpreter):
     def param(self, tree: Tree):
         return tree
 
-
-
     def function_call(self, tree: Tree):
         func_name = str(tree.children[0])
         args = []
         for arg in tree.children[1:]:
             if arg is not None:
                 # Evaluate each argument
-                args.append(ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(arg))
+                args.append(
+                    ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(
+                        arg
+                    )
+                )
 
         # Execute the function and return its actual result value
         return self._execute_function(func_name, args)
@@ -97,24 +106,29 @@ class PaiExecutor(Interpreter):
 
     def return_stmt(self, tree: Tree):
         expr = tree.children[0]
-        
+
         # For function calls, we need to evaluate them directly
-        if isinstance(expr, Tree) and expr.data == 'function_call_expr':
+        if isinstance(expr, Tree) and expr.data == "function_call_expr":
             value = self.visit(expr)
         # For expressions containing function calls, we need special handling
         elif isinstance(expr, Tree) and any(
-            isinstance(child, Tree) and child.data == 'function_call_expr' 
-            for child in expr.children if isinstance(child, Tree)
+            isinstance(child, Tree) and child.data == "function_call_expr"
+            for child in expr.children
+            if isinstance(child, Tree)
         ):
             # First evaluate any function calls in the expression
             for i, child in enumerate(expr.children):
-                if isinstance(child, Tree) and child.data == 'function_call_expr':
+                if isinstance(child, Tree) and child.data == "function_call_expr":
                     expr.children[i] = self.visit(child)
             # Then evaluate the whole expression
-            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(
+                expr
+            )
         else:
-            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(expr)
-            
+            value = ExpressionEvaluator(self.__vars_storage.get_all_variables()).visit(
+                expr
+            )
+
         self.__return_value = value
         self.__is_returning = True
         return Discard
@@ -134,15 +148,15 @@ class PaiExecutor(Interpreter):
         # Save current state
         old_is_returning = self.__is_returning
         old_return_value = self.__return_value
-        
+
         # Create a new scope for the function
         current_scope = self.__vars_storage.get_current_scope()
         function_scope = self.__vars_storage.create_scope()
-        
+
         # Reset return state for this function call
         self.__is_returning = False
         self.__return_value = None
-        
+
         # Set function parameters in the new scope
         for param_name, arg_value in zip(params, args):
             self.__vars_storage.set_variable(param_name, arg_value)
@@ -152,26 +166,18 @@ class PaiExecutor(Interpreter):
 
         # Check if we have a return value from the function
         return_value = self.__return_value
-        
-        # If no explicit return, fall back to the 'result' variable
-        if return_value is None:
-            return_value = self.__vars_storage.get_variable("result")
-        
-        # Get intermediate value if it exists
-        intermediate_value = self.__vars_storage.get_variable("intermediate")
 
         # Clean up function scope and store return value
         self.__vars_storage.remove_scope()
         self.__vars_storage.switch_to_scope(current_scope)
-        
+
         # Store return value in parent scope's "result" variable if we have one
         if return_value is not None:
             self.__vars_storage.set_variable("result", return_value)
-            
+
         # Restore previous return state
         self.__is_returning = old_is_returning
         self.__return_value = old_return_value
-        
+
         # Return the actual computed value, not the AST node
         return return_value
-        
