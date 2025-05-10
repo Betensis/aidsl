@@ -1,14 +1,26 @@
+# This is a comprehensive test file for the PAI language
+# It tests various language features including:
+# - Variable assignment
+# - Conditional statements
+# - Function definitions and calls
+# - Recursion
+# - Variable scoping
+# - Print statements
+
+# Basic variable assignments with different types
 set count to 0
 set message to "Test started"
 set pi to 3
 set is_active to true
 
+# Basic print statements
 print message
 print "Value of count: "
 print count
 print "PI equals: "
 print pi
 
+# Conditional statement with otherwise block
 when count = 0 {
     print "Count is zero"
     set count to count + 1
@@ -19,6 +31,7 @@ when count = 0 {
 print "After first check count equals: "
 print count
 
+# Another conditional with variable modification
 when count > 5 {
     print "Count is greater than 5"
 } otherwise {
@@ -29,10 +42,12 @@ when count > 5 {
 print "After second check count equals: "
 print count
 
+# Function definition that uses a global variable
 tool calculate_area(radius) {
     return pi * radius
 }
 
+# Function with conditional logic
 tool find_max(a, b) {
     when a > b {
         return a
@@ -41,6 +56,7 @@ tool find_max(a, b) {
     }
 }
 
+# Recursive function definition
 tool fibonacci(n) {
     when n <= 1 {
         return n
@@ -53,6 +69,7 @@ tool fibonacci(n) {
     }
 }
 
+# Function calls and storing results
 set radius to 5
 calculate_area(radius)
 set area to result
@@ -67,6 +84,7 @@ find_max(3, 15)
 print "Maximum of 3 and 15: "
 print result
 
+# Testing recursion
 set fib_index to 6
 fibonacci(fib_index)
 print "Fibonacci number "
@@ -74,7 +92,7 @@ print fib_index
 print " equals: "
 print result
 
-
+# Another recursive function
 tool recursive_sum(n) {
     when n <= 1 {
         return n
@@ -89,7 +107,7 @@ recursive_sum(5)
 print "Sum of numbers from 1 to 5: "
 print result
 
-# Testing variable scoping
+# Testing variable scoping with nested functions
 tool test_scoping() {
     set local_var to "local variable"
     set count to 100
