@@ -19,6 +19,8 @@ class ExpressionEvaluator(Interpreter):
             return left > right
         elif operation == "less":
             return left < right
+        elif operation == "notequal":
+            return left < right
         else:
             raise ValueError(f"Unknown operation: {operation}")
 
