@@ -188,6 +188,46 @@ def test_function_redefinition():
     assert executor._PaiExecutor__vars["result"] == "Hi"
 
 
+def test_return_statement():
+    code = """
+    tool add(a, b) {
+        return a + b
+    }
+
+    add(5, 7)
+    set sum_result to result
+    
+    tool get_message() {
+        return "Hello World"
+    }
+    
+    get_message()
+    set message to result
+    
+    tool early_return(x) {
+        when x > 10 {
+            return "Greater than 10"
+        }
+        return "Less than or equal to 10"
+    }
+    
+    early_return(15)
+    set result1 to result
+    
+    early_return(5)
+    set result2 to result
+    """
+
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+
+    assert executor._PaiExecutor__vars["sum_result"] == 12
+    assert executor._PaiExecutor__vars["message"] == "Hello World"
+    assert executor._PaiExecutor__vars["result1"] == "Greater than 10"
+    assert executor._PaiExecutor__vars["result2"] == "Less than or equal to 10"
+
+
 def test_function_error_handling():
     code_wrong_args = """
     tool sum(a, b) {

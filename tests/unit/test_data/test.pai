@@ -30,26 +30,26 @@ print "After second check count equals: "
 print count
 
 tool calculate_area(radius) {
-    set result to pi * radius
+    return pi * radius
 }
 
 tool find_max(a, b) {
     when a > b {
-        set result to a
+        return a
     } otherwise {
-        set result to b
+        return b
     }
 }
 
 tool fibonacci(n) {
     when n <= 1 {
-        set result to n
+        return n
     } otherwise {
         fibonacci(n - 1)
         set fib1 to result
         fibonacci(n - 2)
         set fib2 to result
-        set result to fib1 + fib2
+        return fib1 + fib2
     }
 }
 
@@ -77,11 +77,11 @@ print result
 
 tool recursive_sum(n) {
     when n <= 1 {
-        set result to n
+        return n
     } otherwise {
         recursive_sum(n - 1)
         set prev_sum to result
-        set result to n + prev_sum
+        return n + prev_sum
     }
 }
 

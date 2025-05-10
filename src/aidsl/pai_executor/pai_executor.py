@@ -1,5 +1,5 @@
 from lark import Tree
-from lark.visitors import Interpreter
+from lark.visitors import Interpreter, Discard
 
 from aidsl.expression.evaluator import ExpressionEvaluator
 from aidsl.pai_executor.print_strategy import PrintStrategy, ConsolePrintStrategy
@@ -10,6 +10,8 @@ class PaiExecutor(Interpreter):
         self.__vars = {}
         self.__print_strategy = print_strategy
         self.__functions = {}
+        self.__return_value = None
+        self.__is_returning = False
 
     def assign_stmt(self, tree: Tree):
         name, expr = tree.children
@@ -36,6 +38,8 @@ class PaiExecutor(Interpreter):
     def block(self, tree: Tree):
         for stmt in tree.children:
             self.visit(stmt)
+            if self.__is_returning:
+                break
 
     def start(self, tree: Tree):
         for stmt in tree.children:
@@ -70,6 +74,13 @@ class PaiExecutor(Interpreter):
     def function_call_expr(self, tree: Tree):
         return self.function_call(tree.children[0])
 
+    def return_stmt(self, tree: Tree):
+        expr = tree.children[0]
+        value = ExpressionEvaluator(self.__vars).visit(expr)
+        self.__return_value = value
+        self.__is_returning = True
+        return Discard
+
     def _execute_function(self, func_name, args):
         if func_name not in self.__functions:
             raise ValueError(f"Function '{func_name}' is not defined")
@@ -83,12 +94,25 @@ class PaiExecutor(Interpreter):
             )
 
         old_vars = self.__vars.copy()
+        old_is_returning = self.__is_returning
+        old_return_value = self.__return_value
+        
+        # Reset return state for this function call
+        self.__is_returning = False
+        self.__return_value = None
+        
         for param_name, arg_value in zip(params, args):
             self.__vars[param_name] = arg_value
 
         self.visit(func_info["block"])
 
-        result_value = self.__vars.get("result")
+        # Check if we have a return value from the function
+        return_value = self.__return_value
+        
+        # If no explicit return, fall back to the 'result' variable
+        if return_value is None:
+            return_value = self.__vars.get("result")
+        
         intermediate_value = self.__vars.get("intermediate")
 
         for key in list(self.__vars.keys()):
@@ -97,10 +121,14 @@ class PaiExecutor(Interpreter):
             old_vars[key] = self.__vars[key]
 
         self.__vars = old_vars
+        
+        # Restore previous return state
+        self.__is_returning = old_is_returning
+        self.__return_value = old_return_value
 
-        if result_value is not None:
-            self.__vars["result"] = result_value
+        if return_value is not None:
+            self.__vars["result"] = return_value
         if intermediate_value is not None:
             self.__vars["intermediate"] = intermediate_value
 
-        return result_value
+        return return_value
