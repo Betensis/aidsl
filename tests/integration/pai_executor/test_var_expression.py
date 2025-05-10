@@ -1,6 +1,6 @@
-from lib.pai_executor import SpyPrintStrategy
-from main import get_parser
-from pai_executor import PaiExecutor
+from aidsl.main import get_parser
+from aidsl.pai_executor import PaiExecutor
+from ...lib.pai_executor import SpyPrintStrategy
 
 
 def test_variable_with_condition_expressions():

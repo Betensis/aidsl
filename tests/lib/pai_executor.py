@@ -1,4 +1,4 @@
-from pai_executor import PrintStrategy
+from aidsl.pai_executor import PrintStrategy
 
 
 class SpyPrintStrategy(PrintStrategy):

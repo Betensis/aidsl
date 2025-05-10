@@ -3,12 +3,12 @@ from pathlib import Path
 
 import lark
 
-from pai_executor import PaiExecutor
+from aidsl.pai_executor import PaiExecutor
 
 
 @cache
 def get_parser() -> lark.Lark:
-    project_root = Path(__file__).parent
+    project_root = Path(__file__).parent.parent.parent
     grammar_dir = project_root / "grammar"
     main_grammar = grammar_dir / "main.lark"
 

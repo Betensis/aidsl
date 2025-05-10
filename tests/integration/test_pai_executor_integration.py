@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from main import get_parser
-from pai_executor import PaiExecutor, DoNothingPrintStrategy
+from aidsl.main import get_parser
+from aidsl.pai_executor import PaiExecutor, DoNothingPrintStrategy
 
 parser = get_parser()
 

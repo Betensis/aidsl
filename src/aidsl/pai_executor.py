@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from lark import Tree
 from lark.visitors import Interpreter
 
-from expression.evaluator import ExpressionEvaluator
-from procols import Printable
+from aidsl.expression.evaluator import ExpressionEvaluator
+from aidsl.procols import Printable
 
 
 class PrintStrategy(ABC):

@@ -4,7 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["Betensis <betensis@gmail.com>"]
 readme = "README.md"
-package-mode = false
+
+[[tool.poetry.packages]]
+include = "aidsl"
+from = "src"
 
 [tool.poetry.dependencies]
 python = "^3.12"
