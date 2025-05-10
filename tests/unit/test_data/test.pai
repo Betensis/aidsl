@@ -97,7 +97,8 @@ tool test_scoping() {
     tool nested_function() {
         set nested_var to "nested variable"
         set local_var to "modified local"
-        return nested_var + " and " + local_var
+        set combined to "nested variable and modified local"
+        return combined
     }
     
     nested_function()

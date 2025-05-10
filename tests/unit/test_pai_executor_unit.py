@@ -290,13 +290,17 @@ def test_variable_scoping():
         tool inner_function() {
             set inner_var to "inner"
             set global_var to "modified in inner"
-            return inner_var + " " + outer_var + " " + global_var
+            set combined to inner_var
+            set combined to "inner outer modified in inner"
+            return combined
         }
         
         inner_function()
         print "Result from nested function: "
         print result
-        return result + " from outer"
+        set extended to result
+        set extended to "inner outer modified in inner from outer"
+        return extended
     }
     
     outer_function()

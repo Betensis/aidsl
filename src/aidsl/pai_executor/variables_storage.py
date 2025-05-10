@@ -43,7 +43,13 @@ class VariablesStorage:
         :param name: Name of the variable
         :param value: Value of the variable
         """
-        self.__scopes[self.__current_scope_index][name] = value
+        # If we're in a function scope and the variable exists in global scope,
+        # update it in the global scope instead
+        if self.__current_scope_index > 0 and name in self.__scopes[0]:
+            self.__scopes[0][name] = value
+        else:
+            # Otherwise set it in the current scope
+            self.__scopes[self.__current_scope_index][name] = value
 
     def get_variable(self, name: str) -> Any:
         """
