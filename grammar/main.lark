@@ -28,7 +28,6 @@ tool_stmt: "tool" NAME params block
 params: "(" [param ("," param)*] ")"
 param: NAME
 
-call_stmt: "call" NAME "(" [expression ("," expression)*] ")"
 function_call: NAME "(" [expression ("," expression)*] ")"
 
 ?expression: primary
@@ -47,7 +46,6 @@ block: "{" stmt* "}"
      | when_stmt
      | print_stmt
      | tool_stmt
-     | call_stmt
      | function_call
 
 start: stmt*

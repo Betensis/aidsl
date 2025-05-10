@@ -56,14 +56,6 @@ class PaiExecutor(Interpreter):
     def param(self, tree: Tree):
         return tree
 
-    def call_stmt(self, tree: Tree):
-        func_name = str(tree.children[0])
-        args = []
-        for arg in tree.children[1:]:
-            if arg is not None:
-                args.append(ExpressionEvaluator(self.__vars).visit(arg))
-
-        return self._execute_function(func_name, args)
 
 
     def function_call(self, tree: Tree):
