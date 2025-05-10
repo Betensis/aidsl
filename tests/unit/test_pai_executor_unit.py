@@ -87,11 +87,11 @@ def test_pai_executor_can_handle_functions():
     set initial to 5
 
     tool increment(value) {
-        set result to value + 1
+        return value + 1
     }
 
     tool multiply(a, b) {
-        set result to a * b
+        return a * b
     }
 
     increment(10)
@@ -101,6 +101,7 @@ def test_pai_executor_can_handle_functions():
     set product to result
 
     increment(initial)
+    set incremented_initial to result
     """
 
     tree = parser.parse(code)
@@ -111,6 +112,7 @@ def test_pai_executor_can_handle_functions():
     assert vars_dict["initial"] == 5
     assert vars_dict["after_increment"] == 11
     assert vars_dict["product"] == 12
+    assert vars_dict["incremented_initial"] == 6
     assert vars_dict["result"] == 6
 
     assert "increment" in executor._PaiExecutor__functions
@@ -120,13 +122,12 @@ def test_pai_executor_can_handle_functions():
 def test_nested_function_calls():
     code = """
     tool add(x, y) {
-        set result to x + y
+        return x + y
     }
 
     tool calculate(a, b) {
-        add(a, b)
-        set intermediate to result
-        add(intermediate, 10)
+        set sum_result to add(a, b)
+        return add(sum_result, 10)
     }
 
     calculate(5, 7)
@@ -138,7 +139,7 @@ def test_nested_function_calls():
 
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
     assert vars_dict["result"] == 22
-    assert vars_dict["intermediate"] == 12
+    assert "intermediate" not in vars_dict
 
 
 def test_conditional_inside_function():
@@ -236,7 +237,7 @@ def test_return_statement():
 def test_function_error_handling():
     code_wrong_args = """
     tool sum(a, b) {
-        set result to a + b
+        return a + b
     }
 
     sum(1)
@@ -266,6 +267,7 @@ def test_local_variable_isolation():
     tool modify_local() {
         set local_var to 42
         set global_var to 200
+        return global_var
     }
 
     modify_local()
@@ -276,7 +278,8 @@ def test_local_variable_isolation():
     executor.visit(tree)
 
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
-    assert vars_dict["global_var"] == 200
+    assert vars_dict["global_var"] == 100  # Global var should remain unchanged
+    assert vars_dict["result"] == 200      # Return value is stored in result
     assert "local_var" not in vars_dict
 
 
@@ -284,23 +287,16 @@ def test_variable_scoping():
     code = """
     set global_var to "global"
     
+    tool inner_function() {
+        set inner_var to "inner"
+        set local_global_var to "modified in inner"
+        return "inner result"
+    }
+    
     tool outer_function() {
         set outer_var to "outer"
-        
-        tool inner_function() {
-            set inner_var to "inner"
-            set global_var to "modified in inner"
-            set combined to inner_var
-            set combined to "inner outer modified in inner"
-            return combined
-        }
-        
-        inner_function()
-        print "Result from nested function: "
-        print result
-        set extended to result
-        set extended to "inner outer modified in inner from outer"
-        return extended
+        set inner_result to inner_function()
+        return "outer result using " + inner_result
     }
     
     outer_function()
@@ -312,10 +308,12 @@ def test_variable_scoping():
     executor.visit(tree)
     
     vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
-    assert vars_dict["global_var"] == "modified in inner"
-    assert vars_dict["final_result"] == "inner outer modified in inner from outer"
+    assert vars_dict["global_var"] == "global"  # Global var should remain unchanged
+    assert vars_dict["final_result"] == "outer result using inner result"
+    assert vars_dict["result"] == "outer result using inner result"
     assert "outer_var" not in vars_dict
     assert "inner_var" not in vars_dict
+    assert "local_global_var" not in vars_dict
 
 def test_execute_complex_test_pai():
     test_file_path = Path(__file__).parent / "test_data" / "test.pai"

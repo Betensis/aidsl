@@ -57,19 +57,8 @@ class VariablesStorage:
     def copy_scope_to_parent(
         self, variables_to_copy: Optional[List[str]] = None
     ) -> None:
-        if not self.__is_in_function_scope():
-            return
-
-        current_scope = self.__scopes[self.__current_scope_index]
-        global_scope = self.__scopes[self.__global_scope_index]
-
-        if variables_to_copy is None:
-            for name, value in current_scope.items():
-                global_scope[name] = value
-        else:
-            for name in variables_to_copy:
-                if name in current_scope:
-                    global_scope[name] = current_scope[name]
+        # Function intentionally left empty - no copying between scopes
+        pass
 
     def remove_scope(self) -> None:
         if self.__is_in_function_scope():

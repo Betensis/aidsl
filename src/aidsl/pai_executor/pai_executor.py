@@ -123,17 +123,11 @@ class PaiExecutor(Interpreter):
         # Get intermediate value if it exists
         intermediate_value = self.__vars_storage.get_variable("intermediate")
 
-        # Copy result and intermediate to parent scope if they exist
-        variables_to_copy = []
+        # Store return value in parent scope's "result" variable
         if return_value is not None:
+            # Temporarily switch to parent scope to set result
+            self.__vars_storage.switch_to_scope(current_scope)
             self.__vars_storage.set_variable("result", return_value)
-            variables_to_copy.append("result")
-        if intermediate_value is not None:
-            self.__vars_storage.set_variable("intermediate", intermediate_value)
-            variables_to_copy.append("intermediate")
-            
-        # Copy important variables to parent scope
-        self.__vars_storage.copy_scope_to_parent(variables_to_copy)
         
         # Remove function scope and switch back to previous scope
         self.__vars_storage.remove_scope()
