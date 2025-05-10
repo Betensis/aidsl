@@ -123,12 +123,12 @@ def test_nested_function_calls():
     }
 
     tool calculate(a, b) {
-        call add(a, b)
+        add(a, b)
         set intermediate to result
-        call add(intermediate, 10)
+        add(intermediate, 10)
     }
 
-    call calculate(5, 7)
+    calculate(5, 7)
     """
 
     tree = parser.parse(code)
