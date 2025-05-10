@@ -15,8 +15,17 @@ op: "=" -> equal
     | ">" -> more
     | "<" -> less
     | "!=" -> notequal
+    | "+" -> plus
+    | "*" -> multiply
 
 print_stmt: "print" expression
+
+tool_stmt: "tool" NAME params block
+
+params: "(" [param ("," param)*] ")"
+param: NAME
+
+call_stmt: "call" NAME "(" [expression ("," expression)*] ")"
 
 ?expression: primary
            | primary op primary -> comparison_expr
@@ -32,5 +41,7 @@ block: "{" stmt* "}"
 ?stmt: assign_stmt
      | when_stmt
      | print_stmt
+     | tool_stmt
+     | call_stmt
 
 start: stmt*

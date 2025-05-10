@@ -20,7 +20,19 @@ class ExpressionEvaluator(Interpreter):
         elif operation == "less":
             return left < right
         elif operation == "notequal":
-            return left < right
+            return left != right
+        elif operation == "plus":
+            if isinstance(left, str) or isinstance(right, str):
+                return str(left) + str(right)
+            else:
+                return left + right
+        elif operation == "multiply":
+            if isinstance(left, str) and isinstance(right, int):
+                return left * right
+            elif isinstance(left, int) and isinstance(right, str):
+                return right * left
+            else:
+                return left * right
         else:
             raise ValueError(f"Unknown operation: {operation}")
 
