@@ -64,22 +64,22 @@ class PaiExecutor(Interpreter):
                 args.append(ExpressionEvaluator(self.__vars).visit(arg))
 
         return self._execute_function(func_name, args)
-        
+
     def function_call_stmt(self, tree: Tree):
         return self.function_call(tree)
-        
+
     def function_call(self, tree: Tree):
         func_name = str(tree.children[0])
         args = []
         for arg in tree.children[1:]:
             if arg is not None:
                 args.append(ExpressionEvaluator(self.__vars).visit(arg))
-                
+
         return self._execute_function(func_name, args)
-        
+
     def function_call_expr(self, tree: Tree):
         return self.function_call(tree.children[0])
-        
+
     def _execute_function(self, func_name, args):
         if func_name not in self.__functions:
             raise ValueError(f"Function '{func_name}' is not defined")
@@ -112,5 +112,5 @@ class PaiExecutor(Interpreter):
             self.__vars["result"] = result_value
         if intermediate_value is not None:
             self.__vars["intermediate"] = intermediate_value
-            
+
         return result_value
