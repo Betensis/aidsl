@@ -2,110 +2,76 @@ from typing import Any, Dict, Optional, List
 
 
 class VariablesStorage:
-    """
-    Class to store variables in scope
-    """
-
     def __init__(self):
-        # Global scope is the default scope
-        self.__scopes = [{}]
-        self.__current_scope_index = 0
+        self.__scopes: list[dict[str, Any]] = [{}]
+        self.__current_scope_index: int = 0
+        self.__global_scope_index: int = 0
+
+    def __is_in_function_scope(self) -> bool:
+        return self.__current_scope_index > self.__global_scope_index
+
+    def __variable_exists_in_global_scope(self, name: str) -> bool:
+        return name in self.__scopes[self.__global_scope_index]
 
     def create_scope(self) -> int:
-        """
-        Create a new scope and return its index
-        :return: Index of the new scope
-        """
         self.__scopes.append({})
         self.__current_scope_index = len(self.__scopes) - 1
         return self.__current_scope_index
 
     def switch_to_scope(self, scope_index: int) -> None:
-        """
-        Switch to a specific scope
-        :param scope_index: Index of the scope to switch to
-        """
         if 0 <= scope_index < len(self.__scopes):
             self.__current_scope_index = scope_index
         else:
             raise ValueError(f"Scope index {scope_index} is out of range")
 
     def get_current_scope(self) -> int:
-        """
-        Get the current scope index
-        :return: Current scope index
-        """
         return self.__current_scope_index
 
     def set_variable(self, name: str, value: Any) -> None:
-        """
-        Set a variable in the current scope
-        :param name: Name of the variable
-        :param value: Value of the variable
-        """
-        # If we're in a function scope and the variable exists in global scope,
-        # update it in the global scope instead
-        if self.__current_scope_index > 0 and name in self.__scopes[0]:
-            self.__scopes[0][name] = value
+        if self.__is_in_function_scope() and self.__variable_exists_in_global_scope(
+            name
+        ):
+            self.__scopes[self.__global_scope_index][name] = value
         else:
-            # Otherwise set it in the current scope
             self.__scopes[self.__current_scope_index][name] = value
 
     def get_variable(self, name: str) -> Any:
-        """
-        Get a variable from the current scope or any parent scope
-        :param name: Name of the variable
-        :return: Value of the variable or None if not found
-        """
-        # First check in the current scope
         if name in self.__scopes[self.__current_scope_index]:
             return self.__scopes[self.__current_scope_index][name]
-        
-        # Then check in the global scope if we're not already in it
-        if self.__current_scope_index != 0 and name in self.__scopes[0]:
-            return self.__scopes[0][name]
-        
+
+        if self.__is_in_function_scope() and self.__variable_exists_in_global_scope(
+            name
+        ):
+            return self.__scopes[self.__global_scope_index][name]
+
         return None
 
     def get_all_variables(self) -> Dict[str, Any]:
-        """
-        Get all variables accessible from the current scope
-        :return: Dictionary of all accessible variables
-        """
-        # Start with global scope variables
-        all_vars = self.__scopes[0].copy()
-        
-        # Override with current scope variables if not in global scope
-        if self.__current_scope_index != 0:
-            all_vars.update(self.__scopes[self.__current_scope_index])
-            
-        return all_vars
+        all_variables = self.__scopes[self.__global_scope_index].copy()
 
-    def copy_scope_to_parent(self, variables_to_copy: Optional[List[str]] = None) -> None:
-        """
-        Copy specified variables from current scope to parent scope
-        :param variables_to_copy: List of variable names to copy, if None, copies all
-        """
-        if self.__current_scope_index <= 0:
-            return  # Already in global scope, nothing to do
-            
+        if self.__is_in_function_scope():
+            all_variables.update(self.__scopes[self.__current_scope_index])
+
+        return all_variables
+
+    def copy_scope_to_parent(
+        self, variables_to_copy: Optional[List[str]] = None
+    ) -> None:
+        if not self.__is_in_function_scope():
+            return
+
         current_scope = self.__scopes[self.__current_scope_index]
-        parent_scope_index = 0  # Always copy to global scope
-        
+        global_scope = self.__scopes[self.__global_scope_index]
+
         if variables_to_copy is None:
-            # Copy all variables
             for name, value in current_scope.items():
-                self.__scopes[parent_scope_index][name] = value
+                global_scope[name] = value
         else:
-            # Copy only specified variables
             for name in variables_to_copy:
                 if name in current_scope:
-                    self.__scopes[parent_scope_index][name] = current_scope[name]
+                    global_scope[name] = current_scope[name]
 
     def remove_scope(self) -> None:
-        """
-        Remove the current scope and switch to global scope
-        """
-        if self.__current_scope_index > 0:
+        if self.__is_in_function_scope():
             self.__scopes.pop(self.__current_scope_index)
-            self.__current_scope_index = 0  # Return to global scope
+            self.__current_scope_index = self.__global_scope_index
