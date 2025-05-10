@@ -94,13 +94,13 @@ def test_pai_executor_can_handle_functions():
         set result to a * b
     }
 
-    call increment(10)
+    increment(10)
     set after_increment to result
 
-    call multiply(3, 4)
+    multiply(3, 4)
     set product to result
 
-    call increment(initial)
+    increment(initial)
     """
 
     tree = parser.parse(code)
@@ -149,10 +149,10 @@ def test_conditional_inside_function():
         }
     }
 
-    call max(15, 8)
+    max(15, 8)
     set max_result1 to result
 
-    call max(3, 9)
+    max(3, 9)
     set max_result2 to result
     """
 
@@ -170,14 +170,14 @@ def test_function_redefinition():
         set result to "Hello"
     }
 
-    call greet()
+    greet()
     set first_greeting to result
 
     tool greet() {
         set result to "Hi"
     }
 
-    call greet()
+    greet()
     """
 
     tree = parser.parse(code)
@@ -194,7 +194,7 @@ def test_function_error_handling():
         set result to a + b
     }
 
-    call sum(1)
+    sum(1)
     """
 
     tree = parser.parse(code_wrong_args)
@@ -204,7 +204,7 @@ def test_function_error_handling():
         executor.visit(tree)
 
     code_undefined = """
-    call undefined_function(1, 2)
+    undefined_function(1, 2)
     """
 
     tree = parser.parse(code_undefined)
@@ -223,7 +223,7 @@ def test_local_variable_isolation():
         set global_var to 200
     }
 
-    call modify_local()
+    modify_local()
     """
 
     tree = parser.parse(code)
