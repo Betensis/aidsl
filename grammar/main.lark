@@ -9,20 +9,22 @@ COMMENT: "#" /[^\n]/*
 
 assign_stmt: "set" NAME "to" expression
 
-when_stmt: "when" comparison block ["otherwise" block]
+when_stmt: "when" expression block ["otherwise" block]
 
-comparison: expression op expression
 op: "=" -> equal
     | ">" -> more
     | "<" -> less
 
 print_stmt: "print" expression
 
-?expression: NAME      -> name
-           | INT       -> int
-           | ESCAPED_STRING -> string
-           | "true"    -> true
-           | "false"   -> false
+?expression: primary
+           | primary op primary -> comparison_expr
+
+?primary: NAME      -> name
+        | INT       -> int
+        | ESCAPED_STRING -> string
+        | "true"    -> true
+        | "false"   -> false
 
 block: "{" stmt* "}"
 

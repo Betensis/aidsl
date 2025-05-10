@@ -6,3 +6,7 @@ set alert to 123
 
 set boolean to true
 set boolean to false
+
+set expression to 1 > 0
+set expression to count < 1
+set expression to count = 0
