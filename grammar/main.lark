@@ -48,6 +48,6 @@ block: "{" stmt* "}"
      | print_stmt
      | tool_stmt
      | call_stmt
-     | function_call -> function_call_stmt
+     | function_call
 
 start: stmt*

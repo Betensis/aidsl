@@ -65,8 +65,6 @@ class PaiExecutor(Interpreter):
 
         return self._execute_function(func_name, args)
 
-    def function_call_stmt(self, tree: Tree):
-        return self.function_call(tree)
 
     def function_call(self, tree: Tree):
         func_name = str(tree.children[0])
