@@ -1,19 +1,26 @@
-from pathlib import Path
-
 from aidsl.pai_executor import PaiExecutor, DoNothingPrintStrategy
 from aidsl.parser import get_parser
 
 parser = get_parser()
 
-tested_data_dir = Path(__file__).parent.joinpath("tested_data")
 
+def test_pai_executor_can_parse_var_condition_print():
+    code = """
+    set count to 0
+    when count = 0
+    {
+        print "count is zero"
+    }
+    otherwise
+    {
+        set count to 1
+        print "count is one"
+    }
 
-def test_pai_executor_can_parse_correct_code():
-    for pai_file in tested_data_dir.iterdir():
-        if pai_file.suffix == ".pai":
-            with open(pai_file, "r") as f:
-                code = f.read()
-            tree = parser.parse(code)
-            executor = PaiExecutor(DoNothingPrintStrategy())
-            executor.visit(tree)
-            assert True
+    print count
+    """
+    
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+    assert True

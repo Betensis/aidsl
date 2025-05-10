@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 
 from aidsl.pai_executor import PaiExecutor, DoNothingPrintStrategy
@@ -7,22 +5,78 @@ from aidsl.parser import get_parser
 
 parser = get_parser()
 
-tested_data_dir = Path(__file__).parent.joinpath("tested_data")
+
+def test_pai_executor_can_parse_condition():
+    code = """
+    when 1 = 1
+    {
+    }
+
+    when 1 = 1
+    {
+    }
+    otherwise
+    {
+    }
+
+    when 5 < 3
+    {
+    }
+
+    when 5 < 3
+    {
+    }
+    otherwise
+    {
+    }
+
+    when 5 > 3
+    {
+    }
+    otherwise
+    {
+    }
+    """
+    
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+    assert True
 
 
-def test_pai_executor_can_parse_correct_code():
-    for pai_file in tested_data_dir.iterdir():
-        if pai_file.suffix == ".pai":
-            with open(pai_file, "r") as f:
-                code = f.read()
-            tree = parser.parse(code)
-            executor = PaiExecutor(DoNothingPrintStrategy())
-            try:
-                executor.visit(tree)
-            except Exception as e:
-                assert False, f"Error in file {pai_file}: {e}"
+def test_pai_executor_can_parse_print():
+    code = """
+    print "Test!"
+    print "LALA"
+    print 1
+    """
+    
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+    assert True
 
-            assert True
+
+def test_pai_executor_can_parse_set_variable():
+    code = """
+    set count to 0
+    set count13 to "Test"
+
+    set alert to "asd"
+    set alert to 123
+
+    set boolean to true
+    set boolean to false
+
+    set expression to 1 > 0
+    set expression to count < 1
+    set expression to count = 0
+    """
+    
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+    assert True
 
 
 def test_pai_executor_can_handle_functions():
