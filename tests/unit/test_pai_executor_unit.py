@@ -1,6 +1,7 @@
 import pytest
 
-from aidsl.pai_executor import PaiExecutor, DoNothingPrintStrategy
+from aidsl.pai_executor import PaiExecutor
+from aidsl.pai_executor.print_strategy import DoNothingPrintStrategy
 from aidsl.parser import get_parser
 
 parser = get_parser()
@@ -37,7 +38,7 @@ def test_pai_executor_can_parse_condition():
     {
     }
     """
-    
+
     tree = parser.parse(code)
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
@@ -50,7 +51,7 @@ def test_pai_executor_can_parse_print():
     print "LALA"
     print 1
     """
-    
+
     tree = parser.parse(code)
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
@@ -72,7 +73,7 @@ def test_pai_executor_can_parse_set_variable():
     set expression to count < 1
     set expression to count = 0
     """
-    
+
     tree = parser.parse(code)
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)

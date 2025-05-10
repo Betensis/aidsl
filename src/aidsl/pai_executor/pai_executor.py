@@ -1,26 +1,8 @@
-from abc import ABC, abstractmethod
-
 from lark import Tree
 from lark.visitors import Interpreter
 
 from aidsl.expression.evaluator import ExpressionEvaluator
-from aidsl.procols import Printable
-
-
-class PrintStrategy(ABC):
-    @abstractmethod
-    def print(self, value: Printable):
-        pass
-
-
-class ConsolePrintStrategy(PrintStrategy):
-    def print(self, value: Printable):
-        print(value)
-
-
-class DoNothingPrintStrategy(PrintStrategy):
-    def print(self, value: Printable):
-        pass
+from aidsl.pai_executor.print_strategy import PrintStrategy, ConsolePrintStrategy
 
 
 class PaiExecutor(Interpreter):
