@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from aidsl.pai_executor import PaiExecutor
@@ -230,3 +232,14 @@ def test_local_variable_isolation():
 
     assert executor._PaiExecutor__vars["global_var"] == 200
     assert "local_var" not in executor._PaiExecutor__vars
+
+
+def test_execute_complex_test_pai():
+    test_file_path = Path(__file__).parent / "test_data" / "test.pai"
+    assert test_file_path.exists(), f"File {test_file_path} does not exist"
+    code = test_file_path.read_text()
+    parser = get_parser()
+    tree = parser.parse(code)
+    executor = PaiExecutor()
+    executor.visit(tree)
+    assert True

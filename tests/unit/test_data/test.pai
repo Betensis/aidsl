@@ -1,0 +1,92 @@
+set count to 0
+set message to "Test started"
+set pi to 3
+set is_active to true
+
+print message
+print "Value of count: "
+print count
+print "PI equals: "
+print pi
+
+when count = 0 {
+    print "Count is zero"
+    set count to count + 1
+} otherwise {
+    print "Count is not zero"
+}
+
+print "After first check count equals: "
+print count
+
+when count > 5 {
+    print "Count is greater than 5"
+} otherwise {
+    print "Count is less than or equal to 5"
+    set count to count + 5
+}
+
+print "After second check count equals: "
+print count
+
+tool calculate_area(radius) {
+    set result to pi * radius
+}
+
+tool find_max(a, b) {
+    when a > b {
+        set result to a
+    } otherwise {
+        set result to b
+    }
+}
+
+tool fibonacci(n) {
+    when n <= 1 {
+        set result to n
+    } otherwise {
+        call fibonacci(n - 1)
+        set fib1 to result
+        call fibonacci(n - 2)
+        set fib2 to result
+        set result to fib1 + fib2
+    }
+}
+
+set radius to 5
+call calculate_area(radius)
+set area to result
+print "Circle area with radius 5: "
+print area
+
+call find_max(10, 7)
+print "Maximum of 10 and 7: "
+print result
+
+call find_max(3, 15)
+print "Maximum of 3 and 15: "
+print result
+
+set fib_index to 6
+call fibonacci(fib_index)
+print "Fibonacci number "
+print fib_index
+print " equals: "
+print result
+
+
+tool recursive_sum(n) {
+    when n <= 1 {
+        set result to n
+    } otherwise {
+        call recursive_sum(n - 1)
+        set prev_sum to result
+        set result to n + prev_sum
+    }
+}
+
+call recursive_sum(5)
+print "Sum of numbers from 1 to 5: "
+print result
+
+print "Test finished"

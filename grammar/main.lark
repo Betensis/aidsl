@@ -13,9 +13,12 @@ when_stmt: "when" expression block ["otherwise" block]
 
 op: "=" -> equal
     | ">" -> more
+    | ">=" -> more_or_equal
     | "<" -> less
-    | "!=" -> notequal
+    | "<=" -> less_or_equal
+    | "!=" -> not_equal
     | "+" -> plus
+    | "-" -> minus
     | "*" -> multiply
 
 print_stmt: "print" expression

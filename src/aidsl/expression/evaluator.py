@@ -17,15 +17,24 @@ class ExpressionEvaluator(Interpreter):
             return left == right
         elif operation == "more":
             return left > right
+        elif operation == "more_or_equal":
+            return left >= right
         elif operation == "less":
             return left < right
-        elif operation == "notequal":
+        elif operation == "less_or_equal":
+            return left <= right
+        elif operation == "not_equal":
             return left != right
         elif operation == "plus":
             if isinstance(left, str) or isinstance(right, str):
                 return str(left) + str(right)
             else:
                 return left + right
+        elif operation == "minus":
+            if isinstance(left, str) or isinstance(right, str):
+                raise ValueError("Cannot subtract strings")
+            else:
+                return left - right
         elif operation == "multiply":
             if isinstance(left, str) and isinstance(right, int):
                 return left * right
