@@ -1,5 +1,5 @@
-from aidsl.main import get_parser
 from aidsl.pai_executor import PaiExecutor
+from aidsl.parser import get_parser
 from ...lib.pai_executor import SpyPrintStrategy
 
 

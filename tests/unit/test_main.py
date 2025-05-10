@@ -1,7 +1,7 @@
 import lark
 import pytest
 
-from aidsl.main import get_parser
+from aidsl.parser import get_parser
 
 
 def test_returns_lark_instance_for_valid_grammar():
