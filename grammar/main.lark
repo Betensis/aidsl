@@ -29,9 +29,11 @@ params: "(" [param ("," param)*] ")"
 param: NAME
 
 call_stmt: "call" NAME "(" [expression ("," expression)*] ")"
+function_call: NAME "(" [expression ("," expression)*] ")"
 
 ?expression: primary
            | primary op primary -> comparison_expr
+           | function_call -> function_call_expr
 
 ?primary: NAME      -> name
         | INT       -> int
@@ -46,5 +48,6 @@ block: "{" stmt* "}"
      | print_stmt
      | tool_stmt
      | call_stmt
+     | function_call -> function_call_stmt
 
 start: stmt*
