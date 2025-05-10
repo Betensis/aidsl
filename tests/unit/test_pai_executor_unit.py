@@ -107,10 +107,11 @@ def test_pai_executor_can_handle_functions():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["initial"] == 5
-    assert executor._PaiExecutor__vars["after_increment"] == 11
-    assert executor._PaiExecutor__vars["product"] == 12
-    assert executor._PaiExecutor__vars["result"] == 6
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["initial"] == 5
+    assert vars_dict["after_increment"] == 11
+    assert vars_dict["product"] == 12
+    assert vars_dict["result"] == 6
 
     assert "increment" in executor._PaiExecutor__functions
     assert "multiply" in executor._PaiExecutor__functions
@@ -135,8 +136,9 @@ def test_nested_function_calls():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["result"] == 22
-    assert executor._PaiExecutor__vars["intermediate"] == 12
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["result"] == 22
+    assert vars_dict["intermediate"] == 12
 
 
 def test_conditional_inside_function():
@@ -160,8 +162,9 @@ def test_conditional_inside_function():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["max_result1"] == 15
-    assert executor._PaiExecutor__vars["max_result2"] == 9
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["max_result1"] == 15
+    assert vars_dict["max_result2"] == 9
 
 
 def test_function_redefinition():
@@ -184,8 +187,9 @@ def test_function_redefinition():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["first_greeting"] == "Hello"
-    assert executor._PaiExecutor__vars["result"] == "Hi"
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["first_greeting"] == "Hello"
+    assert vars_dict["result"] == "Hi"
 
 
 def test_return_statement():
@@ -222,10 +226,11 @@ def test_return_statement():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["sum_result"] == 12
-    assert executor._PaiExecutor__vars["message"] == "Hello World"
-    assert executor._PaiExecutor__vars["result1"] == "Greater than 10"
-    assert executor._PaiExecutor__vars["result2"] == "Less than or equal to 10"
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["sum_result"] == 12
+    assert vars_dict["message"] == "Hello World"
+    assert vars_dict["result1"] == "Greater than 10"
+    assert vars_dict["result2"] == "Less than or equal to 10"
 
 
 def test_function_error_handling():
@@ -270,9 +275,43 @@ def test_local_variable_isolation():
     executor = PaiExecutor(DoNothingPrintStrategy())
     executor.visit(tree)
 
-    assert executor._PaiExecutor__vars["global_var"] == 200
-    assert "local_var" not in executor._PaiExecutor__vars
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["global_var"] == 200
+    assert "local_var" not in vars_dict
 
+
+def test_variable_scoping():
+    code = """
+    set global_var to "global"
+    
+    tool outer_function() {
+        set outer_var to "outer"
+        
+        tool inner_function() {
+            set inner_var to "inner"
+            set global_var to "modified in inner"
+            return inner_var + " " + outer_var + " " + global_var
+        }
+        
+        inner_function()
+        print "Result from nested function: "
+        print result
+        return result + " from outer"
+    }
+    
+    outer_function()
+    set final_result to result
+    """
+    
+    tree = parser.parse(code)
+    executor = PaiExecutor(DoNothingPrintStrategy())
+    executor.visit(tree)
+    
+    vars_dict = executor._PaiExecutor__vars_storage.get_all_variables()
+    assert vars_dict["global_var"] == "modified in inner"
+    assert vars_dict["final_result"] == "inner outer modified in inner from outer"
+    assert "outer_var" not in vars_dict
+    assert "inner_var" not in vars_dict
 
 def test_execute_complex_test_pai():
     test_file_path = Path(__file__).parent / "test_data" / "test.pai"
